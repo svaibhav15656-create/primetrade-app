@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primetrade Task Manager</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --bg-card: rgba(24, 24, 27, 0.6);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text-main: #f8fafc;
+            --text-muted: #a1a1aa;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #8b5cf6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225, 39%, 30%, 0.2) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(339, 49%, 30%, 0.2) 0, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+
+        #auth-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            top: 10%;
+            left: 20%;
+            width: 400px;
+            height: 400px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .blob-2 {
+            bottom: 10%;
+            right: 20%;
+            width: 300px;
+            height: 300px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        .auth-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-glass);
+            border: 1px solid var(--border);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .auth-container:hover {
+            box-shadow: 0 15px 45px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 0.25rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: none;
+        }
+
+        .form-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: none;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        .demo-creds {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px dashed var(--border);
+        }
+
+        /* --- App Layout Styles --- */
+        #app-page {
+            display: none;
+            height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '';
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 6px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .role-badge {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1.25rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 10px 10px 0;
+            transform: translateX(0);
+        }
+
+        .content {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* --- Views --- */
+        .view {
+            display: none;
+            animation: modalFadeIn 0.4s ease;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(24, 24, 27, 0.8) 0%, rgba(24, 24, 27, 0.4) 100%);
+            backdrop-filter: blur(10px);
+            padding: 1.75rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .stat-card:nth-child(2)::before {
+            background: var(--warning);
+        }
+
+        .stat-card:nth-child(3)::before {
+            background: var(--primary);
+        }
+
+        .stat-card:nth-child(4)::before {
+            background: var(--success);
+        }
+
+        .stat-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        /* Tables & Lists */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .data-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-in-progress {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .priority-badge {
+            text-transform: capitalize;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .priority-badge::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .priority-low::before {
+            background: var(--success);
+        }
+
+        .priority-medium::before {
+            background: var(--warning);
+        }
+
+        .priority-high {
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .priority-high::before {
+            background: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 8px;
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .toolbar .form-control {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #18181b;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            min-width: 300px;
+            border-top: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.success::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        .toast.error::before {
+            content: '✕';
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Auth Page -->
+    <div id="auth-page">
+        <!-- Animated Blobs -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+
+        <div class="auth-container">
+            <h2 class="auth-title">Primetrade.ai</h2>
+
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Login</div>
+                <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Register</div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" id="login-email" placeholder="name@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="login-password" placeholder="••••••••" required>
+                </div>
+                <div id="login-error" class="form-error"></div>
+                <button type="submit" class="btn" id="login-btn" style="margin-top: 1rem;">Sign In to Dashboard</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="hidden">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" id="reg-name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" id="reg-email" placeholder="name@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="reg-password" placeholder="Min 6 chars + number"
+                        required>
+                </div>
+                <div class="form-group" id="role-group">
+                    <label>Account Role</label>
+                    <select class="form-control" id="reg-role">
+                        <option value="user">Standard User</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                <div id="reg-error" class="form-error"></div>
+                <button type="submit" class="btn" id="reg-btn" style="margin-top: 1rem;">Create Account</button>
+            </form>
+
+            <div class="demo-creds">
+                <strong>Demo Admin:</strong> <br>admin@primetrade.ai / admin123
+            </div>
+        </div>
+    </div>
+
+    <!-- App Layout -->
+    <div id="app-page">
+        <div class="topbar">
+            <div class="logo">Primetrade</div>
+            <div class="user-info">
+                <span id="nav-user-name" style="font-weight: 500;">User Name</span>
+                <span id="nav-user-role" class="role-badge">USER</span>
+                <button class="btn btn-small btn-secondary" onclick="logout()"
+                    style="padding: 0.4rem 1rem;">Logout</button>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="nav-item active" onclick="navigateTo('dashboard')" id="nav-dashboard">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                        </path>
+                    </svg>
+                    Dashboard
+                </div>
+                <div class="nav-item" onclick="navigateTo('mytasks')" id="nav-mytasks">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                        </path>
+                    </svg>
+                    My Tasks
+                </div>
+                <div class="nav-item admin-only hidden" onclick="navigateTo('alltasks')" id="nav-alltasks">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                        </path>
+                    </svg>
+                    All Tasks
+                </div>
+                <div class="nav-item admin-only hidden" onclick="navigateTo('users')" id="nav-users">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                    Users
+                </div>
+                <div style="flex:1"></div>
+                <div
+                    style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 1rem;">
+                    <p
+                        style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600;">
+                        System Links</p>
+                    <a href="http://localhost:5000/api/v1/docs" target="_blank" class="nav-item"
+                        style="padding: 0.5rem; font-size: 0.85rem; text-decoration:none;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        API Docs ↗
+                    </a>
+                    <a href="http://localhost:5000/api/v1/health" target="_blank" class="nav-item"
+                        style="padding: 0.5rem; font-size: 0.85rem; text-decoration:none;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Health Check ↗
+                    </a>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard View -->
+                <div id="view-dashboard" class="view active">
+                    <div class="view-header">
+                        <h2>Analytics Overview</h2>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-title">Total Tasks</div>
+                            <div class="stat-value" id="stat-total">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Pending</div>
+                            <div class="stat-value" id="stat-pending">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">In Progress</div>
+                            <div class="stat-value" id="stat-inprogress">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">Completed</div>
+                            <div class="stat-value" id="stat-completed">0</div>
+                        </div>
+                    </div>
+                    <h3 style="margin-bottom: 1.5rem; font-weight: 500;">Recent Tasks</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Task Title</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-tasks-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- My Tasks View -->
+                <div id="view-mytasks" class="view">
+                    <div class="view-header">
+                        <h2>My Tasks</h2>
+                        <button class="btn" style="width: auto; padding: 0.75rem 1.5rem;" onclick="openTaskModal()">
+                            <svg width="18" height="18" style="margin-right: 0.5rem;" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Create New Task
+                        </button>
+                    </div>
+                    <div class="toolbar">
+                        <select class="form-control" style="width: 220px;" id="filter-status" onchange="loadMyTasks()">
+                            <option value="">Filter by Status (All)</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <select class="form-control" style="width: 220px;" id="filter-priority"
+                            onchange="loadMyTasks()">
+                            <option value="">Filter by Priority (All)</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mytasks-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- All Tasks View (Admin) -->
+                <div id="view-alltasks" class="view">
+                    <div class="view-header">
+                        <h2>System-Wide Tasks</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Owner</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alltasks-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users View (Admin) -->
+                <div id="view-users" class="view">
+                    <div class="view-header">
+                        <h2>User Management</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Email Address</th>
+                                    <th>Role</th>
+                                    <th>Join Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal-overlay" id="task-modal" onclick="closeModalOnOutsideClick(event)">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin-bottom: 2rem; font-size: 1.75rem;">Create Task</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <div class="form-group">
+                    <label>Task Title <span style="color:var(--danger)">*</span></label>
+                    <input type="text" class="form-control" id="task-title" placeholder="e.g. Design homepage layout"
+                        required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea class="form-control" id="task-description" rows="3"
+                        placeholder="Add more details about this task..." maxlength="500"></textarea>
+                </div>
+                <div style="display:flex; gap: 1.5rem;">
+                    <div class="form-group" style="flex:1">
+                        <label>Status</label>
+                        <select class="form-control" id="task-status">
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label>Priority</label>
+                        <select class="form-control" id="task-priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="task-error" class="form-error"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" style="width: auto; padding: 0.75rem 1.5rem;"
+                        onclick="closeTaskModal()">Cancel</button>
+                    <button type="submit" class="btn" style="width: auto; padding: 0.75rem 2rem;"
+                        id="save-task-btn">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toasts container -->
+    <div class="toast-container" id="toasts"></div>
+
+    <script>
+        const API = 'http://localhost:5000/api/v1';
+        let currentUser = null;
+        let currentToken = null;
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('pt_token');
+            const userStr = localStorage.getItem('pt_user');
+
+            if (token && userStr) {
+                currentToken = token;
+                currentUser = JSON.parse(userStr);
+                showApp();
+            } else {
+                document.getElementById('auth-page').style.display = 'flex';
+            }
+        });
+
+        // --- HTTP Helper ---
+        async function fetchAPI(endpoint, method = 'GET', body = null) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (currentToken) {
+                headers['Authorization'] = `Bearer ${currentToken}`;
+            }
+
+            const config = { method, headers };
+            if (body) config.body = JSON.stringify(body);
+
+            try {
+                const res = await fetch(`${API}${endpoint}`, config);
+                const data = await res.json();
+
+                if (res.status === 401) {
+                    logout();
+                    throw new Error('Session expired. Please log in again.');
+                }
+
+                if (!res.ok) {
+                    let errMsg = data.message || 'Request failed';
+                    if (data.errors && data.errors.length) errMsg += ': ' + data.errors[0].msg;
+                    throw new Error(errMsg);
+                }
+
+                return data;
+            } catch (err) {
+                throw err;
+            }
+        }
+
+        // --- Auth Logic ---
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if (tab === 'login') {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+            } else {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const errEl = document.getElementById('login-error');
+
+            btn.innerHTML = '<div class="spinner"></div>';
+            errEl.style.display = 'none';
+
+            try {
+                const data = await fetchAPI('/auth/login', 'POST', {
+                    email: document.getElementById('login-email').value,
+                    password: document.getElementById('login-password').value
+                });
+
+                loginSuccess(data.data.token, data.data.user);
+            } catch (err) {
+                errEl.innerText = err.message;
+                errEl.style.display = 'block';
+            } finally {
+                btn.innerHTML = 'Sign In to Dashboard';
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('reg-btn');
+            const errEl = document.getElementById('reg-error');
+
+            btn.innerHTML = '<div class="spinner"></div>';
+            errEl.style.display = 'none';
+
+            try {
+                const data = await fetchAPI('/auth/register', 'POST', {
+                    name: document.getElementById('reg-name').value,
+                    email: document.getElementById('reg-email').value,
+                    password: document.getElementById('reg-password').value,
+                    role: document.getElementById('reg-role').value
+                });
+
+                loginSuccess(data.data.token, data.data.user);
+            } catch (err) {
+                errEl.innerText = err.message;
+                errEl.style.display = 'block';
+            } finally {
+                btn.innerHTML = 'Create Account';
+            }
+        });
+
+        function loginSuccess(token, user) {
+            currentToken = token;
+            currentUser = user;
+            localStorage.setItem('pt_token', token);
+            localStorage.setItem('pt_user', JSON.stringify(user));
+            showToast('Welcome to Primetrade!', 'success');
+            showApp();
+        }
+
+        function logout() {
+            currentToken = null;
+            currentUser = null;
+            localStorage.removeItem('pt_token');
+            localStorage.removeItem('pt_user');
+            document.getElementById('app-page').style.display = 'none';
+            document.getElementById('auth-page').style.display = 'flex';
+
+            document.getElementById('login-password').value = '';
+        }
+
+        // --- Navigation ---
+        function showApp() {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('app-page').style.display = 'block';
+
+            document.getElementById('nav-user-name').innerText = currentUser.name;
+            document.getElementById('nav-user-role').innerText = currentUser.role;
+
+            if (currentUser.role === 'admin') {
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+            } else {
+                document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+            }
+
+            navigateTo('dashboard');
+        }
+
+        function navigateTo(viewId) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${viewId}`).classList.add('active');
+
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewId}`).classList.add('active');
+
+            if (viewId === 'dashboard') loadDashboard();
+            if (viewId === 'mytasks') loadMyTasks();
+            if (viewId === 'alltasks') loadAllTasks();
+            if (viewId === 'users') loadUsers();
+        }
+
+        // --- Loaders ---
+        function getStatusBadge(status) {
+            return `<span class="status-badge status-${status}">${status}</span>`;
+        }
+
+        function getPriorityBadge(priority) {
+            return `<span class="priority-badge priority-${priority}">${priority}</span>`;
+        }
+
+        function getEmptyState(message) {
+            return `
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            <p>${message}</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        async function loadDashboard() {
+            // Stats
+            if (currentUser.role === 'admin') {
+                try {
+                    const stats = await fetchAPI('/tasks/stats');
+                    document.getElementById('stat-total').innerText = stats.data.total;
+                    document.getElementById('stat-pending').innerText = stats.data.byStatus.pending;
+                    document.getElementById('stat-inprogress').innerText = stats.data.byStatus['in-progress'];
+                    document.getElementById('stat-completed').innerText = stats.data.byStatus.completed;
+                } catch (e) { console.error("Stats error", e); }
+            } else {
+                try {
+                    const res = await fetchAPI(`/tasks?limit=100`);
+                    const tasks = res.data;
+                    document.getElementById('stat-total').innerText = tasks.length;
+                    document.getElementById('stat-pending').innerText = tasks.filter(t => t.status === 'pending').length;
+                    document.getElementById('stat-inprogress').innerText = tasks.filter(t => t.status === 'in-progress').length;
+                    document.getElementById('stat-completed').innerText = tasks.filter(t => t.status === 'completed').length;
+                } catch (e) { }
+            }
+
+            // Recent Tasks
+            try {
+                const res = await fetchAPI('/tasks?limit=5');
+                const tbody = document.getElementById('dash-tasks-body');
+                tbody.innerHTML = '';
+
+                if (res.data.length === 0) {
+                    tbody.innerHTML = getEmptyState('No recent tasks found. Head over to My Tasks to create one!');
+                    return;
+                }
+
+                res.data.forEach(task => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 500">${task.title}</td>
+                            <td>${getStatusBadge(task.status)}</td>
+                            <td>${getPriorityBadge(task.priority)}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function loadMyTasks() {
+            const tbody = document.getElementById('mytasks-body');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;"><div class="spinner"></div></td></tr>';
+
+            const status = document.getElementById('filter-status').value;
+            const priority = document.getElementById('filter-priority').value;
+
+            let query = '/tasks?';
+            if (status) query += `status=${status}&`;
+            if (priority) query += `priority=${priority}`;
+
+            try {
+                const res = await fetchAPI(query);
+                tbody.innerHTML = '';
+
+                // Mongoose backend auto-filters by userId if standard user.
+                let tasks = res.data;
+                if (currentUser.role === 'admin') {
+                    tasks = tasks.filter(t => t.userId === currentUser.id);
+                }
+
+                if (tasks.length === 0) {
+                    tbody.innerHTML = getEmptyState('No tasks match your criteria.');
+                    return;
+                }
+
+                tasks.forEach(task => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 500">${task.title}</td>
+                            <td style="color: var(--text-muted); font-size: 0.9rem">${task.description || '<span style="opacity:0.5">No description</span>'}</td>
+                            <td>${getStatusBadge(task.status)}</td>
+                            <td>${getPriorityBadge(task.priority)}</td>
+                            <td style="text-align: right;">
+                                <div class="action-btns" style="justify-content: flex-end;">
+                                    <button class="btn btn-small" style="background:rgba(99, 102, 241, 0.2); color: #a5b4fc;" onclick='editTask(${JSON.stringify(task)})'>Edit</button>
+                                    <button class="btn btn-small btn-danger" onclick="deleteTask('${task.id}')">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function loadAllTasks() {
+            const tbody = document.getElementById('alltasks-body');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;"><div class="spinner"></div></td></tr>';
+
+            try {
+                const res = await fetchAPI('/tasks');
+                tbody.innerHTML = '';
+
+                if (res.data.length === 0) {
+                    tbody.innerHTML = getEmptyState('The system currently has no tasks.');
+                    return;
+                }
+
+                res.data.forEach(task => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:0.5rem">
+                                    <div style="width:24px; height:24px; border-radius:50%; background:var(--primary); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold;">
+                                        ${task.userName ? task.userName.charAt(0).toUpperCase() : 'U'}
+                                    </div>
+                                    <span style="color:var(--text-muted)">${task.userName || 'Unknown'}</span>
+                                </div>
+                            </td>
+                            <td style="font-weight: 500">${task.title}</td>
+                            <td>${getStatusBadge(task.status)}</td>
+                            <td>${getPriorityBadge(task.priority)}</td>
+                            <td style="text-align: right;">
+                                <div class="action-btns" style="justify-content: flex-end;">
+                                    <button class="btn btn-small" style="background:rgba(99, 102, 241, 0.2); color: #a5b4fc;" onclick='editTask(${JSON.stringify(task)}, "alltasks")'>Edit</button>
+                                    <button class="btn btn-small btn-danger" onclick="deleteTask('${task.id}', 'alltasks')">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function loadUsers() {
+            const tbody = document.getElementById('users-body');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem;"><div class="spinner"></div></td></tr>';
+
+            try {
+                const res = await fetchAPI('/auth/users');
+                tbody.innerHTML = '';
+
+                res.data.forEach(u => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 500">${u.name}</td>
+                            <td style="color:var(--text-muted)">${u.email}</td>
+                            <td>${u.role === 'admin' ? '<span class="role-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border-color: rgba(16, 185, 129, 0.3);">ADMIN</span>' : '<span class="role-badge" style="background: rgba(255,255,255,0.05); color: var(--text-muted); border-color: rgba(255,255,255,0.1);">USER</span>'}</td>
+                            <td style="font-size:0.9rem; color:var(--text-muted)">${new Date(u.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // --- Task Modal ---
+        let returnView = 'mytasks';
+
+        function openTaskModal() {
+            document.getElementById('task-form').reset();
+            document.getElementById('task-id').value = '';
+            document.getElementById('modal-title').innerText = 'Create New Task';
+            document.getElementById('task-error').style.display = 'none';
+            document.getElementById('task-modal').classList.add('active');
+            returnView = 'mytasks';
+
+            document.getElementById('task-status').value = 'pending';
+            document.getElementById('task-priority').value = 'medium';
+            setTimeout(() => document.getElementById('task-title').focus(), 100);
+        }
+
+        function editTask(task, origin = 'mytasks') {
+            document.getElementById('task-id').value = task.id;
+            document.getElementById('task-title').value = task.title;
+            document.getElementById('task-description').value = task.description;
+            document.getElementById('task-status').value = task.status;
+            document.getElementById('task-priority').value = task.priority;
+
+            document.getElementById('modal-title').innerText = 'Edit Task';
+            document.getElementById('task-error').style.display = 'none';
+            document.getElementById('task-modal').classList.add('active');
+            returnView = origin;
+        }
+
+        function closeTaskModal() {
+            document.getElementById('task-modal').classList.remove('active');
+        }
+
+        function closeModalOnOutsideClick(e) {
+            if (e.target.id === 'task-modal') {
+                closeTaskModal();
+            }
+        }
+
+        document.getElementById('task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-task-btn');
+            const errEl = document.getElementById('task-error');
+
+            btn.innerHTML = '<div class="spinner"></div>';
+            errEl.style.display = 'none';
+
+            const id = document.getElementById('task-id').value;
+            const payload = {
+                title: document.getElementById('task-title').value,
+                description: document.getElementById('task-description').value,
+                status: document.getElementById('task-status').value,
+                priority: document.getElementById('task-priority').value
+            };
+
+            try {
+                if (id) {
+                    await fetchAPI(`/tasks/${id}`, 'PUT', payload);
+                    showToast('Task updated successfully', 'success');
+                } else {
+                    await fetchAPI('/tasks', 'POST', payload);
+                    showToast('Task created successfully', 'success');
+                }
+
+                closeTaskModal();
+                if (returnView === 'mytasks') loadMyTasks();
+                if (returnView === 'alltasks') loadAllTasks();
+            } catch (err) {
+                errEl.innerText = err.message;
+                errEl.style.display = 'block';
+            } finally {
+                btn.innerHTML = 'Save Task';
+            }
+        });
+
+        async function deleteTask(id, origin = 'mytasks') {
+            if (!confirm('Are you sure you want to permanently delete this task?')) return;
+
+            try {
+                await fetchAPI(`/tasks/${id}`, 'DELETE');
+                showToast('Task deleted successfully', 'success');
+                if (origin === 'mytasks') loadMyTasks();
+                if (origin === 'alltasks') loadAllTasks();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // --- Toasts ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toasts');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000); // 5 sec duration
+        }
+    </script>
+</body>
+
+</html>
