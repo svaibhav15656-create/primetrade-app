@@ -29,7 +29,7 @@
 
 If you have Docker Desktop installed, you can launch the entire project instantly without needing to download MongoDB or Node manually:
 
-1. Open a terminal in the root folder of the project.
+1. Open a terminal in the root folder of the project .
 2. Run this command:
    ```bash
    docker-compose up --build
