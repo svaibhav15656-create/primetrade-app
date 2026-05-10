@@ -8,7 +8,6 @@
 
 ### What I used to build it (Tech Stack)
 - **Backend:** Node.js
-- **Web Framework:** Express.js
 - **Database:** MongoDB (with Mongoose ORM)
 - **Security:** jsonwebtoken (JWT) and bcryptjs
 - **Frontend:** HTML5, CSS3, and Vanilla JavaScript
