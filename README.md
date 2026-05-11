@@ -23,19 +23,3 @@
 - **Docker:** I containerized the backend, frontend, and the MongoDB database. This guarantees that if another developer pulls my code, it will run identically on their machine with a single command, eliminating "it works on my machine" setup issues.
 
 ---
-
-### How to run it
-
-If you have Docker Desktop installed, you can launch the entire project instantly without needing to download MongoDB or Node manually:
-
-1. Open a terminal in the root folder of the project .
-2. Run this command:
-   ```bash
-   docker-compose up --build
-   ```
-3. Open `http://localhost:3000` in your browser for the application.
-4. Open `http://localhost:5000/api/v1/docs` in your browser for the interactive Swagger API documentation.
-
-
-### Security Note regarding `.env`(point to be noted)
-Please notice that the `.env` file containing the environment variables and delicate `JWT_SECRET` keys has **not** been uploaded to GitHub. I intentionally excluded it by adding `.env` to the `.gitignore` file to ensure the utmost privacy and security of out application credentials in the repository!
